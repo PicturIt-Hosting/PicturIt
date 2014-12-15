@@ -26,6 +26,12 @@ if(isset($_POST['verify2'])){
 
 if(isset($_FILES['userfile'])){
 	$uploaddir = "images/";
+	
+	// we don't want unwanted image test uploads in the repo, so make the images dir if it isn't already there
+	if (!file_exists($uploaddir)) {
+		mkdir($uploaddir, 0777, true);
+	}
+	
 	$uploadfile = $uploaddir . basename($_FILES['userfile']['name']);
 	
 	if($_FILES['userfile']['error'] != 0){

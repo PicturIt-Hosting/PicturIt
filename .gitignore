@@ -1,3 +1,7 @@
+# images dir
+images/
+
+
 ###### From https://github.com/github/gitignore
 ###### Add more stuff here as necessary
 #### Make sure we don't commit any random windows files
