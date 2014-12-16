@@ -6,8 +6,8 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title></title>
-        <meta name="description" content="">
+        <title>PicturIt! - Free, Safe, Secure Image Hosting</title>
+        <meta name="description" content="PicturIt! - Free, safe, and secure image hosting - by Scratchers, for Scratchers.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="stylesheet" href="css/normalize.min.css">
@@ -23,7 +23,16 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <p>Hello world! This is HTML5 Boilerplate.</p>
+        <!-- It's a test rig; not full HTML yet-->
+		<form id="image_upload" enctype="multipart/form-data" action="upload.php" method="POST">
+			<input type="hidden" name="MAX_FILE_SIZE" value="10000000" />
+			Send this file: <input name="userfile" type="file" />
+			<input type="text" style="display:none;" name="verify1" value="" />
+			<input type="text" style="display:none;" name="verify2" value="swag" /> <!-- replace with CSRF or something -->
+			<input type="submit" value="Send File" />
+		</form>
+		<progress id="upload_progress"></progress>
+		<pre id="json_response"></pre>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.1.min.js"><\/script>')</script>
