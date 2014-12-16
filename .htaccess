@@ -308,12 +308,12 @@ AddDefaultCharset utf-8
 # specification: http://w3.org/TR/CSP). Also, to make things easier, you can
 # use an online CSP header generator such as: http://cspisawesome.com/.
 
-<IfModule mod_headers.c>
-     Header set Content-Security-Policy "script-src 'self'; object-src 'self'"
-     <FilesMatch "\.(appcache|atom|crx|css|cur|eot|f4[abpv]|flv|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|tt[cf]|vcf|vtt|webapp|web[mp]|woff|xml|xpi)$">
-         Header unset Content-Security-Policy
-     </FilesMatch>
-</IfModule>
+#<IfModule mod_headers.c>
+#     Header set Content-Security-Policy "script-src 'self'; object-src 'self'"
+#     <FilesMatch "\.(appcache|atom|crx|css|cur|eot|f4[abpv]|flv|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|tt[cf]|vcf|vtt|webapp|web[mp]|woff|xml|xpi)$">
+#         Header unset Content-Security-Policy
+#     </FilesMatch>
+#</IfModule>
 
 # ------------------------------------------------------------------------------
 # | File access                                                                |
