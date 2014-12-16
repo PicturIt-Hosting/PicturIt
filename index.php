@@ -19,6 +19,19 @@ $("form").submit(function(e){
         type: 'POST',
         data: formData,
         async: true,
+		xhr: function(){
+			var xhr = jQuery.ajaxSettings.xhr();
+            if(xhr instanceof window.XMLHttpRequest) {
+                xhr.upload.addEventListener("progress", function(evt){
+					if (evt.lengthComputable) {  
+						var percentComplete = evt.loaded * 100 / evt.total;
+						console.log("Progress: ", percentComplete);
+						$("#swag").attr("max","100").attr("value",percentComplete);
+				}
+				}, false); 
+            }
+            return xhr;
+		},
         success: function (data) {
             $("#swag").hide();
 			$("pre").text(JSON.stringify(data));
