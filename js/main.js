@@ -15,7 +15,7 @@ $("form#image_upload").submit(function(e){
 						var percentComplete = evt.loaded * 100 / evt.total;
 						console.log("Progress: ", percentComplete);
 						$("#upload_progress").attr("max","100").attr("value",percentComplete);
-				}
+					}
 				}, false); 
             }
             return xhr;
@@ -23,7 +23,12 @@ $("form#image_upload").submit(function(e){
         success: function (data) {
             $("#upload_progress").hide();
 			$("#json_response").text(JSON.stringify(data));
+			$("[name=userfile]").val("");
         },
+		error: function(){
+			$("#upload_progress").hide();
+			$("#json_response").text("Sorry! Something bad happened and your image wasn't uploaded. Check your internet connection and try again.");
+		},
         cache: false,
         contentType: false,
         processData: false
