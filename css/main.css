@@ -5,7 +5,11 @@ button,
 input,
 select,
 textarea {
-    color: #222;
+    color: white;
+}
+
+input[type=submit] {
+	color: black;
 }
 
 html {
@@ -61,8 +65,18 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
-#upload_progress {
+progress#upload_progress {
 	display: none;
+}
+
+canvas#background {
+	z-index: -1;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	background:  #1E1F3D;
 }
 
 /* ==========================================================================
@@ -158,6 +172,10 @@ textarea {
     a:visited {
         text-decoration: underline;
     }
+	
+	canvas#background {
+		display: none;
+	}
 
     a[href]:after {
         content: " (" attr(href) ")";

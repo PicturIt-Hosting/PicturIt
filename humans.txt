@@ -10,6 +10,7 @@
 
 # THANKS
 
+	http://thecodeplayer.com/walkthrough/html5-canvas-snow-effect
     Swag
 	
 # NO THANKS
