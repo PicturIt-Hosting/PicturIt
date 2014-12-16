@@ -3,11 +3,18 @@
 
 # TEAM
 
-    <name> -- <role> -- <twitter>
+    turkey3          -- programming / hosting -- http://scratch.mit.edu/users/turkey3
+	djdolphin        -- programming           -- http://scratch.mit.edu/users/djdolphin
+	MegaApuTurkUltra -- programming           -- http://scratch.mit.edu/users/MegaApuTurkUltra
+	andrewjcole      -- programming           -- http://scratch.mit.edu/users/andrewjcole
 
 # THANKS
 
-    <name>
+    Swag
+	
+# NO THANKS
+
+	Tinypic
 
 # TECHNOLOGY COLOPHON
 
