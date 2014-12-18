@@ -10,12 +10,12 @@
         <meta name="description" content="PicturIt! - Free, safe, and secure image hosting - by Scratchers, for Scratchers.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="css/normalize.min.css">
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="/css/normalize.min.css">
+        <link rel="stylesheet" href="/css/main.css">
 		<?php if(isset($inject)) echo $inject; ?>
         <!--[if lt IE 9]>
             <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-            <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+            <script>window.html5 || document.write('<script src="/js/vendor/html5shiv.js"><\/script>')</script>
         <![endif]-->
     </head>
     <body>

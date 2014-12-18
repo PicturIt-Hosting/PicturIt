@@ -70,7 +70,7 @@ $inject = "<style type='text/css'>
             }
 			</style>";
 $title = "404 Not Found";
-require_once("header.php"); 
+require_once($_SERVER['DOCUMENT_ROOT']."/header.php"); 
 ?>
 <h1>Not found <span>:(</span></h1>
 <p>Sorry, but the page you were trying to view does not exist.</p>
@@ -84,4 +84,4 @@ require_once("header.php");
 </script>
 <script src="//linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
 <p style="margin-top:40px;">If you've been led here from a page on this website, <a href="/contact-us.php">let us know</a>!</p>
-<?php require_once("footer.php"); ?>
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/footer.php"); ?>
