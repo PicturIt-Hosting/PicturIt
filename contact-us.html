@@ -18,24 +18,8 @@
             <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
         <![endif]-->
         <style>
-        div.content {
-        width:70%;
-        background-color:white;
-        border-radius:40px;
-        moz-border-radius:40px;
-        webkit-border-radius:40px;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 50px;
-        padding-left: 50px;
-        padding-right: 50px;
-        padding-top: 25px;
-        padding-bottom: 25px;
-        }
-        
         p.footertext {
-        color:grey; 
+			color:grey; 
         }
         </style>
     </head>
@@ -47,24 +31,21 @@
 <!-- I'm not sure how you guys want this page to look, as the only page we really have to base this off of is the index.html page -->
 
 	<canvas id="background"></canvas>
-        <div class="content" align="center"><a href="index.html"><img src="http://wap.wapka.mobi/pictures/buildingtools/placeholder_logo.png" align="left" width="160" height="50" alt="PicturTt"></a>
-        <br>
-        <br>
-        <hr style="color:grey;">
-        <h2 style="color:black;">Contact Us</h2>
-        <p style="color:black;">The PicturIt team is working to create an easy-to-use image hosting site for anybody to use. If you have any questions, comments or would like to report a problem, don't hesitate to contact us!</p>
-        <p style="color:grey;">[FORM HERE]</p>
-        <hr>
-        <p class="footertext"><script>
-        var d = new Date()
-        document.write(d.getFullYear())
-        </script> PicturIt</p>
-        <div>
+	
+    <div class="main-content">
+		<a href="index.html">
+			<img class='header-img' src="http://wap.wapka.mobi/pictures/buildingtools/placeholder_logo.png" width="160" height="50" alt="PicturIt">
+		</a>
+        <br />
+        <br />
+        <hr />
+        <h2>Contact Us</h2>
+        <p>The PicturIt team is working to create an easy-to-use image hosting site for anybody to use. If you have any questions, comments or would like to report a problem, don't hesitate to contact us!</p>
+        <p>[FORM HERE]</p>
+        <hr />
+        <p class="footertext"><span id="picturit-date"></span> PicturIt</p>
+     <div>
 		
-
-
-
-
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.1.min.js"><\/script>')</script>
 

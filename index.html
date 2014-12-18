@@ -25,16 +25,25 @@
 
 		<canvas id="background"></canvas>
 		
-        <!-- It's a test rig; not full HTML yet-->
-		<form id="image_upload" enctype="multipart/form-data" action="upload.php" method="POST">
-			<input type="hidden" name="MAX_FILE_SIZE" value="10000000" />
-			Send this file: <input name="userfile" type="file" />
-			<input type="text" style="display:none;" name="verify1" value="" />
-			<input type="text" style="display:none;" name="verify2" value="swag" /> <!-- replace with CSRF or something -->
-			<input type="submit" value="Send File" />
-		</form>
-		<progress id="upload_progress"></progress>
-		<pre id="json_response"></pre>
+        <div class="main-content">
+			<a href="index.html">
+				<img class='header-img' src="http://wap.wapka.mobi/pictures/buildingtools/placeholder_logo.png" width="160" height="50" alt="PicturIt">
+			</a>
+			<br />
+			<br />
+			<hr />
+			<form id="image_upload" enctype="multipart/form-data" action="upload.php" method="POST">
+				<input type="hidden" name="MAX_FILE_SIZE" value="10000000" />
+				Send this file: <input name="userfile" type="file" />
+				<input type="text" style="display:none;" name="verify1" value="" />
+				<input type="text" style="display:none;" name="verify2" value="swag" /> <!-- replace with CSRF or something -->
+				<input type="submit" value="Send File" />
+			</form>
+			<progress id="upload_progress"></progress>
+			<pre id="json_response"></pre>
+			<hr />
+			<p class="footertext"><span id="picturit-date"></span> PicturIt</p>
+		<div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.1.min.js"><\/script>')</script>

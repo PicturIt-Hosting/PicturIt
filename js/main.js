@@ -1,4 +1,10 @@
 /**
+* Year
+*/
+var d = new Date();
+$("span#picturit-date").text(d.getFullYear());
+
+/**
  * Canvas background
  */
 ///// http://thecodeplayer.com/walkthrough/html5-canvas-snow-effect
