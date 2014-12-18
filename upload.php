@@ -1,4 +1,6 @@
 <?php
+require_once("databaselib.php");
+
 function unique_id($l = 8) {
     return substr(md5(uniqid(mt_rand(), true)), 0, $l);
 }
@@ -9,6 +11,15 @@ if(isset($_GET['file_too_big'])){
 	$json['message'] = "That file is too big! Try again with a file under 8MB";
 	die(json_encode($json));
 }
+
+try {
+	connectDatabase();
+} catch(Exception $e){
+	$json['debug'] = $e;
+	$json['message'] = "Whoops! There was a server-side database error.";
+	die(json_encode($json));
+}
+
 if(isset($_POST['verify1'])){
 	if($_POST['verify1'] != ""){
 		$json['message'] = "Sorry! An unknown error happened.";
@@ -64,17 +75,32 @@ if(isset($_FILES['userfile'])){
 			}
 		}
 		if($proceed){
-			$name = "";
-			do {
-				$name = unique_id(8);
-			} while(file_exists($basedir.$name.$ext));
-			$json['debug'] .= $name."\n";
-			if (move_uploaded_file($_FILES['userfile']['tmp_name'], $basedir.$name.$ext)) {
+			$hash = hash_file('md5', $_FILES['userfile']['tmp_name']);
+			$existing = imageExists($hash);
+			if(sizeof($existing) > 0){
 				$json['status'] = "success";
-				$json['message'] = "Your image was uploaded successfully";
-				$json['image_url'] = $basedir.$name.$ext;
+				$json['message'] = "Your image has been uploaded before, so here's the original URL.";
+				$json['image_url'] = $existing[0]['name'];
 			} else {
-				$json['message'] = "Sorry! A server side error prevented us from uploading your file. Try again later.";
+				$name = "";
+				do {
+					$name = unique_id(8);
+				} while(file_exists($basedir.$name.$ext));
+				$json['debug'] .= $name."\n";
+				if (move_uploaded_file($_FILES['userfile']['tmp_name'], $basedir.$name.$ext)) {
+					try {
+						addImageRow($name.$ext, $hash);
+						$json['status'] = "success";
+						$json['message'] = "Your image was uploaded successfully";
+						$json['image_url'] = $name.$ext;
+					} catch(Exception $e){
+						$json['debug'] .= "\n".$e;
+						$json['message'] = "Whoops! There was a server-side database error.";
+						die(json_encode($json));
+					}
+				} else {
+					$json['message'] = "Sorry! A server side error prevented us from uploading your file. Try again later.";
+				}
 			}
 		}
 	}

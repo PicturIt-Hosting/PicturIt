@@ -6,6 +6,13 @@
 # this logic there: http://httpd.apache.org/docs/current/howto/htaccess.html.
 
 # ##############################################################################
+# # DENYING ACCESS TO SENSITIVE STUFFS                                         #
+# ##############################################################################
+
+RedirectMatch 404 ^/images/.*$
+RedirectMatch 404 ^/databaselib\.php$
+
+# ##############################################################################
 # # CROSS-ORIGIN RESOURCE SHARING (CORS)                                       #
 # ##############################################################################
 
@@ -203,6 +210,8 @@ AddDefaultCharset utf-8
 	RewriteCond %{REQUEST_METHOD} =POST
 	RewriteCond %{HTTP:Content-Length}%{CONTENT_LENGTH} >8388608
 	RewriteRule .* /upload.php?file_too_big [R,NC]
+	
+	RewriteRule i/([a-zA-Z0-9]+\.(jpeg|jpg|png|gif)) /get.php?image=$1 [NC]
 </IfModule>
 
 # ------------------------------------------------------------------------------
