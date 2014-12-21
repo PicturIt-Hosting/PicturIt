@@ -65,6 +65,87 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+#drop-info {
+	font-size: 1.1em;
+	text-align: center;
+}
+
+#preview {
+	width: 200px;
+	max-height: 200px;
+	display: none;
+	margin-bottom: 20px;
+}
+
+#uploader {
+	text-align: center;
+	position: relative;
+}
+   
+form#image_upload {
+	background: #abcdef;
+	border: 5px solid #478;
+	border-radius: 10px;
+	box-sizing: border-box;
+	width: 200px;
+	height: 50px;
+	margin-right: auto;
+	margin-left: auto;
+	position: relative;
+	transition: background 0.3s, box-shadow 0.3s, text-shadow 0.3s;
+	box-shadow: 0px 0px 10px white, 0px 0px 5px gray inset;
+}
+
+form#image_upload.on-preview {
+	background: #bcdeff;
+	box-shadow: 0px 0px 20px white, 0px 0px 5px gray inset;
+	text-shadow: 0px 0px 5px gray;
+}
+
+form#image_upload.on-preview:hover {
+	background: #cdefff;
+	box-shadow: 0px 0px 20px 5px white, 0px 0px 10px gray inset;
+	text-shadow: 0px 0px 10px gray;
+}
+
+form#image_upload:hover {
+	background: #bcdeff;
+	box-shadow: 0px 0px 20px white, 0px 0px 5px gray inset;
+	text-shadow: 0px 0px 5px gray;
+}
+
+form#image_upload p {
+	margin-top: 5%;
+	font-size: 1.5em;
+	text-align: center;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
+}
+
+input#userfile {
+	opacity: 0;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+}
+
+form#image_upload input[type=submit] {
+	opacity: 0;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+}
+   
 progress#upload_progress {
 	display: none;
 }

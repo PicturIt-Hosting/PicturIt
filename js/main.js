@@ -1,6 +1,6 @@
 /**
-* Year
-*/
+ * Year
+ */
 var d = new Date();
 $("span#picturit-date").text(d.getFullYear());
 
@@ -96,7 +96,7 @@ function update() {
 //animation loop
 setInterval(draw, 33);
 
-$(window).resize(function(){
+$(window).resize(function () {
 	W = $(window).width();
 	H = $(window).height();
 	canvas.width = W;
@@ -104,8 +104,31 @@ $(window).resize(function(){
 });
 
 /**
+ * File drop
+ */
+
+/**
  * Image uploading via ajax
  */
+$("form#image_upload input[type=file]").change(function (e) {
+	$("#userfile, #drop-info").hide();
+	$("form#image_upload p").text("Upload");
+	var evt = e.originalEvent;
+	var files = evt.target.files; // to do: fallback if not supported
+	for (var i = 0, f; f = files[i]; i++) {
+		if (!f.type.match('image.*')) {
+			continue;
+		}
+		var reader = new FileReader();
+		reader.onload = (function (theFile) {
+			return function (e1) {
+				$("#preview").attr("src", e1.target.result).slideDown();
+			};
+		})(f);
+		reader.readAsDataURL(f);
+	}
+});
+
 $("form#image_upload").submit(function (e) {
 	e.preventDefault();
 	var formData = new FormData($(this)[0]);
