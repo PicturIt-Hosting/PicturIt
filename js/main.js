@@ -111,71 +111,119 @@ $("form#image_upload").remove().appendTo($("#header-right"));
 /**
  * Init
  */
-$(".loading").delay(1000).fadeOut(100, function(){
+$(".loading").delay(2000).fadeOut(100, function () {
 	$(".loading-hidden").slideDown();
 });
 
 /**
- * Notification function
+ * Utility functions
  */
-function notify(text){
+function notify(text) {
 	$("#notification").text(text).fadeIn().delay(5000).fadeOut();
+}
+function getSize(size) {
+	if (size < 1000) {
+		return size + " B";
+	}
+	if (size < 100000) {
+		return Math.floor(size / 1000) + " KB";
+	}
+	if (size < 10000000) {
+		return (Math.floor(size / 100000) / 10) + " MB";
+	} else
+		return "Too big!";
+}
+
+function getName(name) {
+	if (name.length <= 10)
+		return name;
+	if (name.indexOf(".") < 0)
+		return name.substring(0, 7) + "...";
+	var idx = name.lastIndexOf(".");
+	var ext = name.substring(idx);
+	var file = name.substring(0, idx);
+	return file.substring(0, 8 - ext.length) + ".." + ext;
 }
 
 /**
  * File drop
  */
 // to be implemented
- 
+
 /**
  * Image uploading via ajax
  */
- 
-var current_files = [];
+
+var current_files = {};
 $("form#image_upload input[type=file]").change(function (e) {
 	var evt = e.originalEvent;
 	var files = evt.target.files; // to do: fallback if not supported
 	for (var i = 0, f; f = files[i]; i++) {
 		if (!f.type.match('image.*')) {
-			notify("Your file "+f.name+" doesn't seem to be an image or is corrupted.");
+			notify("Your file " + f.name + " doesn't seem to be an image or is corrupted.");
 			continue;
 		}
-		current_files.push(f);
+
+		var key;
+		do {
+			key = "img" + Math.random();
+		} while (current_files.hasOwnProperty(key));
+		current_files[key] = f;
+
 		var size = 0;
-		for(temp_file in current_files){
+		for (temp_file in current_files) {
 			size += current_files[temp_file].size;
 		}
-		
-		if(size > 8388608){
+
+		if (size > 8388608) {
 			notify("An image was not added because it would bring the total size past 8MB. Remove some images and try again, or upload more images later.");
+			delete current_files[key];
 			break;
 		}
-		
+
 		var reader = new FileReader();
-		reader.onload = (function (theFile) {
+		reader.onload = (function (theFile, theKey) {
 			return function (e1) {
-				$("#preview-div br").remove();
 				$("form#image_upload p").text("Add More");
 				var img = $("<img />").addClass("preview").attr("src", e1.target.result).css("display", "none");
-				$("<div><span class='helper'></span></div>").addClass("preview-container").append(img).appendTo($("#preview-div")).css("display", "none").fadeIn();
+				var div = $("<div><div class='del'>Remove</div><div class='info'></div><span class='helper'></span></div>").addClass("preview-container")
+					.attr("id", theKey).append(img).css("display", "none").fadeIn();
+				$("#preview-div").prepend(div);
 				img.slideDown();
+				div.find(".info").append("Name: " + getName(theFile.name) + "<br />"
+					 + "Size: " + getSize(theFile.size)).attr("title", theFile.name + "\n" + theFile.size + " Bytes");
+				div.find(".del").attr("title", "Remove this image from the upload queue").click(function () {
+					div.animate({
+						width : 0,
+						height : 0,
+						opacity : 0
+					}, 700, function () {
+						$(this).remove();
+					});
+					delete current_files[div.attr("id")];
+				});
+				$("#upload_button").fadeIn();
 			};
-		})(f);
-		reader.onerror = function(){
-			notify("Error: Unable to read your file "+f.name+". Sorry!");
+		})(f, key);
+		reader.onerror = function () {
+			notify("Error: Unable to read your file " + f.name + ". Sorry!");
 		};
 		reader.readAsDataURL(f);
 	}
 });
 
-$("form#image_upload").submit(function (e) {
+$("#upload_button").click(function (e) {
 	e.preventDefault();
-	var formData = new FormData($(this)[0]);
 	$("#upload_progress").show();
 	$.ajax({
 		url : "upload.php",
 		type : 'POST',
-		data : formData,
+		data : {
+			"verify1":"",
+			"verify2":"swag"
+			// todo: files
+			// todo: make php script handle multiple files
+		},
 		async : true,
 		xhr : function () {
 			var xhr = jQuery.ajaxSettings.xhr();
