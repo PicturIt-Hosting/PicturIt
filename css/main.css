@@ -70,11 +70,48 @@ textarea {
 	text-align: center;
 }
 
-#preview {
+.preview {
 	width: 200px;
 	max-height: 200px;
 	display: none;
+	margin: 5px;
+	vertical-align: middle;
+}
+
+.preview-container .helper {
+	display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.preview-container {
+	width: 210px;
+	height: 210px;
 	margin-bottom: 20px;
+	margin-right: 20px;
+	float: left;
+	border: 2px solid white;
+	border-radius: 10px;
+	box-shadow: 0px 0px 10px #779;
+	transition: box-shadow 0.3s, background 0.3s;
+}
+
+.preview-container:hover {
+	box-shadow: 2px 2px 10px 5px #FFF;
+	background: rgba(255, 255, 255, 0.5);
+}
+
+.preview-container:hover img {
+	box-shadow: 1px 1px 5px inset #999;
+}
+
+.preview:last {
+	clear: right;
+}
+
+#header-right {
+	float: right;
+	display: inline-block;
 }
 
 #uploader {
@@ -145,10 +182,6 @@ form#image_upload input[type=submit] {
 	height: 100%;
 	z-index: 1;
 }
-   
-progress#upload_progress {
-	display: none;
-}
 
 canvas#background {
 	z-index: -1;
@@ -160,6 +193,31 @@ canvas#background {
 	background:  #1E1F3D;
 }
 
+#notification {
+	position: fixed;
+	z-index: 99999;
+	width: 90%;
+	top: 5%;
+	left: 5%;
+	padding: 5px;
+	background-color: rgba(245, 59, 59, 0.5);
+	color: white;
+	display: none;
+	border-radius: 10px;
+	border: 2px solid red;
+	text-align: center;
+}
+
+.loading-hidden {
+	display: none;
+}
+
+.loading {
+	margin-right: auto;
+	margin-left: auto;
+	display: block;
+}
+
 div.main-content {
 	width:70%;
 	background-color: rgba(255, 255, 255, 0.7);
@@ -169,13 +227,13 @@ div.main-content {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
-	margin-top: 50px;
-	padding-left: 50px;
-	padding-right: 50px;
-	padding-top: 25px;
-	padding-bottom: 25px;
-	
+	margin-top: 2%;
+	padding-left: 2%;
+	padding-right: 2%;
+	padding-top: 1%;
+	padding-bottom: 1%;
 	color: black;
+	min-height: 70%;
 }
 
 div.main-content input {

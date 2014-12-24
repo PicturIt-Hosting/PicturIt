@@ -22,13 +22,15 @@
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-
+		<div id="notification"></div>
 		<canvas id="background"></canvas>
 		
         <div class="main-content">
 			<a href="index.html">
 				<img class='header-img' src="http://wap.wapka.mobi/pictures/buildingtools/placeholder_logo.png" width="160" height="50" alt="PicturIt">
 			</a>
+			<div id="header-right" class='loading-hidden'>
+			</div>
 			<br />
 			<br />
 			<hr />

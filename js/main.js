@@ -104,27 +104,66 @@ $(window).resize(function () {
 });
 
 /**
+ * Hax. Todo: work around
+ */
+$("form#image_upload").remove().appendTo($("#header-right"));
+
+/**
+ * Init
+ */
+$(".loading").delay(1000).fadeOut(100, function(){
+	$(".loading-hidden").slideDown();
+});
+
+/**
+ * Notification function
+ */
+function notify(text){
+	$("#notification").text(text).fadeIn().delay(5000).fadeOut();
+}
+
+/**
  * File drop
  */
-
+// to be implemented
+ 
 /**
  * Image uploading via ajax
  */
+ 
+var current_files = [];
 $("form#image_upload input[type=file]").change(function (e) {
-	$("#userfile, #drop-info").hide();
-	$("form#image_upload p").text("Upload");
 	var evt = e.originalEvent;
 	var files = evt.target.files; // to do: fallback if not supported
 	for (var i = 0, f; f = files[i]; i++) {
 		if (!f.type.match('image.*')) {
+			notify("Your file "+f.name+" doesn't seem to be an image or is corrupted.");
 			continue;
 		}
+		current_files.push(f);
+		var size = 0;
+		for(temp_file in current_files){
+			size += current_files[temp_file].size;
+		}
+		
+		if(size > 8388608){
+			notify("An image was not added because it would bring the total size past 8MB. Remove some images and try again, or upload more images later.");
+			break;
+		}
+		
 		var reader = new FileReader();
 		reader.onload = (function (theFile) {
 			return function (e1) {
-				$("#preview").attr("src", e1.target.result).slideDown();
+				$("#preview-div br").remove();
+				$("form#image_upload p").text("Add More");
+				var img = $("<img />").addClass("preview").attr("src", e1.target.result).css("display", "none");
+				$("<div><span class='helper'></span></div>").addClass("preview-container").append(img).appendTo($("#preview-div")).css("display", "none").fadeIn();
+				img.slideDown();
 			};
 		})(f);
+		reader.onerror = function(){
+			notify("Error: Unable to read your file "+f.name+". Sorry!");
+		};
 		reader.readAsDataURL(f);
 	}
 });
