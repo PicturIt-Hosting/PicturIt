@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once("databaselib.php");
 
 function unique_id($l = 8) {
@@ -20,21 +21,33 @@ try {
 	die(json_encode($json));
 }
 
+$hacks = FALSE;
 if(isset($_POST['verify1'])){
 	if($_POST['verify1'] != ""){
-		$json['message'] = "Sorry! An unknown error happened.";
-		// deal with spambot here (as no human would ever fill out an input form that's hidden)
-		// Maybe temporarily IP ban if they try too many times?
-		die(json_encode($json));
+		$hacks = TRUE;
 	}
+} else {
+	$hacks = TRUE;
 }
 if(isset($_POST['verify2'])){
 	if($_POST['verify2'] != "swag"){
-		$json['message'] = "Sorry! An unknown error happened.";
-		// deal with spambot here (as no human would ever replace an input form that's hidden)
-		// Maybe temporarily IP ban if they try too many times?
-		die(json_encode($json));
+		$hacks = TRUE;
 	}
+} else {
+	$hacks = TRUE;
+}
+if(isset($_POST['token']) && isset($_SESSION['token'])){
+	if($_POST['token'] != $_SESSION['token']){
+		$hacks = TRUE;
+	}
+} else {
+	$hacks = TRUE;
+}
+if($hacks){
+	$json['message'] = "Sorry! An unknown error happened.";
+	// deal with spambot here
+	// Maybe temporarily IP ban if they try too many times?
+	die(json_encode($json));
 }
 
 // add more spam protection here
@@ -48,13 +61,13 @@ if(isset($_FILES['userfile'])){
 	}
 	
 	$error = FALSE;
-	for($i=0;$i<sizeof($_FILES['userfile']);$i++){
-		$current_json = array("status"=>"error","message"=>"Unknown","image_url"=>"N/A");
+	foreach($_FILES['userfile']['tmp_name'] as $i => $tmpName){
+		$current_json = array("status"=>"error","message"=>"Unknown","image_url"=>"N/A","hash"=>"");
 		if($_FILES['userfile']['error'][$i] != 0){
 			$current_json['message'] = "Sorry! Our servers encountered an error with your upload request. Maybe you didn't send us a file?";
 		} else {
 			$ext = ".wut";
-			$type = exif_imagetype($_FILES['userfile']['tmp_name'][$i]);
+			$type = exif_imagetype($tmpName);
 			if($type==FALSE || $type==0) $type = "Unknown (yet)";
 			$json['debug'] .= "Image type:$type\n";
 			$proceed = FALSE;
@@ -66,7 +79,7 @@ if(isset($_FILES['userfile'])){
 				// add more later
 			} else {
 				try {
-					$doc = @simplexml_load_file($_FILES['userfile']['tmp_name'][$i]);
+					$doc = @simplexml_load_file($tmpName);
 					if(is_object($doc) && $doc->getName() == "svg"){
 						$json['debug'] .= "Image type: SVG?\n";
 						$proceed = TRUE;
@@ -78,37 +91,41 @@ if(isset($_FILES['userfile'])){
 				}
 			}
 			if($proceed){
-				$hash = hash_file('md5', $_FILES['userfile']['tmp_name'][$i]);
+				$hash = hash_file('md5', $tmpName);
 				$existing = imageExists($hash);
 				if(sizeof($existing) > 0){
 					$current_json['status'] = "success";
 					$current_json['message'] = "Your image has been uploaded before, so here's the original URL.";
 					$current_json['image_url'] = $existing[0]['name'];
+					$current_json['hash'] = $hash;
 				} else {
 					$name = "";
 					do {
 						$name = unique_id(8);
 					} while(file_exists($basedir.$name.$ext));
 					$json['debug'] .= $name."\n";
-					if (move_uploaded_file($_FILES['userfile']['tmp_name'][$i], $basedir.$name.$ext)) {
+					if (move_uploaded_file($tmpName, $basedir.$name.$ext)) {
 						try {
 							addImageRow($name.$ext, $hash);
 							$current_json['status'] = "success";
 							$current_json['message'] = "Your image was uploaded successfully";
 							$current_json['image_url'] = $name.$ext;
+							$current_json['hash'] = $hash;
 						} catch(Exception $e){
 							$json['debug'] .= "\n".$e;
 							$current_json['message'] = "Whoops! There was a server-side database error.";
+							$current_json['hash'] = $hash;
 						}
 					} else {
-						$json['message'] = "Sorry! A server side error prevented us from uploading your file. Try again later.";
+						$current_json['message'] = "Sorry! A server side error prevented us from uploading your file. Try again later.";
+						$current_json['hash'] = $hash;
 					}
 				}
 			}
 		}
 		$json['results'][$i] = $current_json;
 	}
-	if(!$ERROR){
+	if(!$error){
 		$json['status'] = "success";
 		$json['message'] = "All images uploaded successfully.";
 	} else {

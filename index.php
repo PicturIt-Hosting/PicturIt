@@ -1,4 +1,17 @@
-<?php $title="Upload"; require_once("header.php"); ?>
+<?php 
+session_start();
+
+function unique_id() {
+    return md5(uniqid(mt_rand(), true));
+}
+
+$token = unique_id();
+$_SESSION['token'] = $token;
+
+$title="Upload"; require_once("header.php"); ?>
+<script type="text/javascript">
+window.sessionToken = "<?= $token ?>";
+</script>
 <img class='loading' src='img/loading.gif' />
 <img class='loading' src='img/loading2.gif' />
 
@@ -7,6 +20,11 @@ Whoops! It appears you are using a browser that doesn't support JavaScript.
 This site needs JavaScript to function properly. 
 If possible, enable JavaScript or upgrade to a newer browser, then reload this site.
 </noscript>
+
+<div id="error_no_apis">
+	Whoops! It seems your browser doesn't support some features that we need to upload pictures!<br/>
+	Make sure to upgrade to the latest version of your browser, or switch to a modern browser like Mozilla Firefox, Google Chrome, or Opera
+</div>
 
 <div id="uploader" class='loading-hidden'>
 	<div id="preview-div" class="clearfix">
@@ -22,6 +40,9 @@ If possible, enable JavaScript or upgrade to a newer browser, then reload this s
 	<div id="upload_button" class='button' title="Ready to go? Click me!"><p class='text'>Upload!</p></div>
 	<progress id="upload_progress" style="display: none;"></progress>
 	<pre id="json_response"></pre>
+	<div id="results">
+		
+	</div>
 </div>
 
 <?php require_once("footer.php"); ?>

@@ -169,6 +169,42 @@ textarea {
 	display: inline-block;
 }
 
+#error_no_apis {
+	border: 5px solid red;
+	color: white;
+	background: rgba(255, 0, 0, 0.5);
+	border-radius: 10px;
+	padding: 1em;
+	display: none;
+}
+
+#results {
+	border: 5px solid white;
+	color: black;
+	background: rgba(200, 200, 255, 0.5);
+	border-radius: 10px;
+	padding: 1em;
+	display: none;
+	padding: 1em;
+	text-align: left;
+}
+
+#results p {
+	margin: 0;
+}
+
+#results .success {
+	color: green;
+}
+
+#results .error {
+	color: red;
+}
+
+#results .partial {
+	color: yellow;
+}
+
 #uploader {
 	text-align: center;
 	position: relative;

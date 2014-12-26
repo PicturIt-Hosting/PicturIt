@@ -111,9 +111,15 @@ $("form#image_upload").remove().appendTo($("#header-right"));
 /**
  * Init
  */
-$(".loading").delay(2000).fadeOut(100, function () {
-	$(".loading-hidden").slideDown();
-});
+if(window.File && window.FormData){
+	$(".loading").delay(2000).fadeOut(100, function () {
+		$(".loading-hidden").slideDown();
+	});
+} else {
+	$("form#image_upload").hide();
+	$("#error_no_apis").slideDown();
+	$(".loading").hide();
+}
 
 /**
  * Utility functions
@@ -155,6 +161,7 @@ function getName(name) {
  */
 
 var current_files = {};
+var file_map = {};
 $("form#image_upload input[type=file]").change(function (e) {
 	var evt = e.originalEvent;
 	var files = evt.target.files; // to do: fallback if not supported
@@ -208,6 +215,7 @@ $("form#image_upload input[type=file]").change(function (e) {
 						$(this).remove();
 					});
 					delete current_files[div.attr("id")];
+					delete file_map[div.attr("id")];
 				});
 				$("#upload_button").fadeIn();
 			};
@@ -216,11 +224,20 @@ $("form#image_upload input[type=file]").change(function (e) {
 			notify("Error: Unable to read your file " + f.name + ". Sorry!");
 		};
 		reader.readAsDataURL(f);
+		
+		var hashReader = new FileReader();
+		hashReader.onload = (function(theFile, theKey) {
+			return function(e2){
+				file_map[theKey] = md5(e2.target.result);
+			};
+		})(f, key);
+		hashReader.readAsBinaryString(f);
 	}
 });
 
 $("#upload_button").click(function (e) {
 	e.preventDefault();
+	$("#results").slideUp();
 	var len = 0;
 	for(x in current_files) len++;
 	if(len==0) return;
@@ -228,6 +245,7 @@ $("#upload_button").click(function (e) {
 	var formData = new FormData();
 	formData.append("verify1", "");
 	formData.append("verify2", "swag");
+	formData.append("token", window.sessionToken);
 	for(fileName in current_files){
 		formData.append("userfile[]", current_files[fileName]);
 	}
@@ -251,14 +269,38 @@ $("#upload_button").click(function (e) {
 		},
 		success : function (data) {
 			$("#upload_progress").hide();
-			$("#json_response").text(JSON.stringify(data));
+			$("#json_response").text(data);
+			$("#upload_button").slideUp();
+			try {
+				var resp = JSON.parse(data);
+				$("#results").html("").append("<p class='"+resp.status+"'><strong>Status: </strong>"+resp.status+"</p>")
+					.slideDown();
+				var numOk = 0, numFailed = 0;
+				for(var i=0;i<resp.results.length;i++){
+					if(resp.results[i].status == "success"){
+						numOk++;
+					} else {
+						numFailed++;
+					}
+				}
+				$("#results").append("<p class='"+(numOk > 0 ? 'success' : 'failed')+"'><strong>"+numOk+" </strong> images uploaded.</p>");
+				if(numFailed > 0) {
+					$("#results").append("<p class='error'><strong>"+numFailed+" </strong> images failed to upload.</p>");
+					$("#upload_button").slideDown().find("p.text").text("Try again");
+				}
+			} catch(e){
+				console.log(e);
+				notify("Sorry! There was a problem receiving a response from our servers. Try again later.");
+			}
 		},
-		error : function () {
+		error : function (jqXHR, textStatus, errorThrown) {
+			console.log(jqXHR, textStatus, errorThrown);
 			$("#upload_progress").hide();
 			$("#json_response").text("Sorry! Something bad happened and your image wasn't uploaded. Check your internet connection and try again.");
 		},
 		cache : false,
 		contentType : false,
+		dataType : "text",
 		processData : false
 	});
 	return false;

@@ -18,6 +18,14 @@ function connectDatabase(){
 	if(!tableExists("images")) createImagesTable();
 }
 
+function getAllImages(){
+	global $dbh;
+	$stmt = $dbh->prepare("SELECT * FROM `images`");
+	$stmt->execute();
+	$res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	return $res;
+}
+
 function createImagesTable(){
 	global $dbh;
 	$dbh->exec(
