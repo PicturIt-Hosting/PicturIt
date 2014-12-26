@@ -163,6 +163,13 @@ $("form#image_upload input[type=file]").change(function (e) {
 			notify("Your file " + f.name + " doesn't seem to be an image or is corrupted.");
 			continue;
 		}
+		
+		var len = 0;
+		for(x in current_files) len++;
+		if(len >= 20){
+			notify("There is a limit of 20 images at a time, so some of your images weren't added.");
+			break;
+		}
 
 		var key;
 		do {
@@ -214,16 +221,20 @@ $("form#image_upload input[type=file]").change(function (e) {
 
 $("#upload_button").click(function (e) {
 	e.preventDefault();
+	var len = 0;
+	for(x in current_files) len++;
+	if(len==0) return;
 	$("#upload_progress").show();
+	var formData = new FormData();
+	formData.append("verify1", "");
+	formData.append("verify2", "swag");
+	for(fileName in current_files){
+		formData.append("userfile[]", current_files[fileName]);
+	}
 	$.ajax({
 		url : "upload.php",
 		type : 'POST',
-		data : {
-			"verify1":"",
-			"verify2":"swag"
-			// todo: files
-			// todo: make php script handle multiple files
-		},
+		data: formData,
 		async : true,
 		xhr : function () {
 			var xhr = jQuery.ajaxSettings.xhr();
@@ -241,7 +252,6 @@ $("#upload_button").click(function (e) {
 		success : function (data) {
 			$("#upload_progress").hide();
 			$("#json_response").text(JSON.stringify(data));
-			$("[name=userfile]").val("");
 		},
 		error : function () {
 			$("#upload_progress").hide();
