@@ -151,7 +151,6 @@ textarea {
 	color: white;
 	background: rgba(0, 0, 0, 0.5);
 	border-radius: 3px;
-	font-size: 0.7em;
 	padding: 0.5em;
 	position: absolute;
 	top: 5%;
@@ -175,6 +174,7 @@ textarea {
     border: 0;
     padding-left: 1em;
     background: #ddf;
+	max-width: 50%;
 }
 
 .preview-container .info {

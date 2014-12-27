@@ -43,7 +43,10 @@ If possible, enable JavaScript or upgrade to a newer browser, then reload this s
 		<input id="userfile" name="userfile[]" type="file" title="Go ahead - it doesn't bite" multiple />
 		<input type="submit" />
 	</form>
-	<p id="drop-info">Or drop images anywhere<br/><em>Limit of 8MB / 20 images per request</em></p>
+	<p id="drop-info">
+		Or drop images anywhere<br/>
+		PNG, JPEG, GIF, and SVG images supported (more formats later)
+		<br/><em>Limit of 8MB / 20 images per request</em></p>
 	<div id="upload_button" class='button' title="Ready to go? Click me!"><p class='text'>Upload!</p></div>
 	<pre id="json_response"></pre>
 	<div id="results">

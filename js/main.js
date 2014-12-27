@@ -111,7 +111,7 @@ $("form#image_upload").remove().appendTo($("#header-right"));
 /**
  * Init
  */
-if(window.File && window.FormData){
+if (window.File && window.FormData) {
 	$(".loading").delay(2000).fadeOut(100, function () {
 		$(".loading-hidden").slideDown();
 	});
@@ -162,6 +162,7 @@ function getName(name) {
 
 var current_files = {};
 var file_map = {};
+var trying_again = false;
 $("form#image_upload input[type=file]").change(function (e) {
 	var evt = e.originalEvent;
 	var files = evt.target.files; // to do: fallback if not supported
@@ -170,10 +171,11 @@ $("form#image_upload input[type=file]").change(function (e) {
 			notify("Your file " + f.name + " doesn't seem to be an image or is corrupted.");
 			continue;
 		}
-		
+
 		var len = 0;
-		for(x in current_files) len++;
-		if(len >= 20){
+		for (x in current_files)
+			len++;
+		if (len >= 20) {
 			notify("There is a limit of 20 images at a time, so some of your images weren't added.");
 			break;
 		}
@@ -202,7 +204,7 @@ $("form#image_upload input[type=file]").change(function (e) {
 				$("form#image_upload p").text("Add More");
 				var img = $("<img />").addClass("preview").attr("src", e1.target.result).css("display", "none");
 				var div = $("<div><div class='results'>In upload queue</div><div class='del'>Remove</div><div "
-					+"class='info'></div><span class='helper'></span></div>").addClass("preview-container")
+						 + "class='info'></div><span class='helper'></span></div>").addClass("preview-container")
 					.attr("id", theKey).append(img).css("display", "none").fadeIn();
 				$("#preview-div").prepend(div);
 				img.slideDown();
@@ -226,10 +228,10 @@ $("form#image_upload input[type=file]").change(function (e) {
 			notify("Error: Unable to read your file " + f.name + ". Sorry!");
 		};
 		reader.readAsDataURL(f);
-		
+
 		var hashReader = new FileReader();
-		hashReader.onload = (function(theFile, theKey) {
-			return function(e2){
+		hashReader.onload = (function (theFile, theKey) {
+			return function (e2) {
 				file_map[theKey] = md5(e2.target.result);
 			};
 		})(f, key);
@@ -239,26 +241,35 @@ $("form#image_upload input[type=file]").change(function (e) {
 
 $("#upload_button").click(function (e) {
 	e.preventDefault();
+	if(trying_again){
+		var cont = confirm("This will remove all successfully uploaded images from your queue. Continue?");
+		if(!cont) return;
+		$(".preview-container.success").remove();
+	}
 	$("#results").slideUp();
 	var len = 0;
-	for(x in current_files) len++;
-	if(len==0) return;
+	for (x in current_files)
+		len++;
+	if (len == 0)
+		return;
 	var formData = new FormData();
 	formData.append("verify1", "");
 	formData.append("verify2", "swag");
 	formData.append("token", window.sessionToken);
-	for(fileName in current_files){
+	for (fileName in current_files) {
 		formData.append("userfile[]", current_files[fileName]);
 	}
 	$(".preview-container .results").text("Uploading...");
 	$("#upload_overlay .upload_info").text("Connecting...");
 	$("#upload_overlay progress").removeAttr("value").removeAttr("max");
-	var timeoutId = setTimeout(function(){ $("#upload_overlay .upload_info").text("Uploading..."); }, 1000);
+	var timeoutId = setTimeout(function () {
+			$("#upload_overlay .upload_info").text("Uploading...");
+		}, 1000);
 	$("#upload_overlay").fadeIn();
 	$.ajax({
 		url : "upload.php",
 		type : 'POST',
-		data: formData,
+		data : formData,
 		async : true,
 		xhr : function () {
 			var xhr = jQuery.ajaxSettings.xhr();
@@ -269,7 +280,7 @@ $("#upload_button").click(function (e) {
 						console.log("Progress: ", percentComplete);
 						$("#upload_progress").attr("max", "100").attr("value", percentComplete);
 						clearTimeout(timeoutId);
-						$("#upload_overlay .upload_info").text("Uploading: " + percentComplete+"%");
+						$("#upload_overlay .upload_info").text("Uploading: " + percentComplete + "%");
 					}
 				}, false);
 			}
@@ -282,53 +293,65 @@ $("#upload_button").click(function (e) {
 			$("#drop-info").slideUp();
 			try {
 				var resp = JSON.parse(data);
-				$("#results").html("").append("<p class='"+resp.status+"'><strong>Status: </strong>"+resp.status+"</p>")
-					.slideDown();
-				if(resp.status != "error"){
-					$("#image_upload, #upload_button").slideUp();
-				}
-				var numOk = 0, numFailed = 0;
-				for(var i=0;i<resp.results.length;i++){
+				$("#results").html("").append("<p class='" + resp.status + "'><strong>Status: </strong>" + resp.status + "</p>")
+				.slideDown();
+				var numOk = 0,
+				numFailed = 0;
+				for (var i = 0; i < resp.results.length; i++) {
 					var result = resp.results[i];
-					if(result.status == "success"){
+					if (result.status == "success") {
 						numOk++;
 					} else {
 						numFailed++;
 					}
 					var hash = result.hash;
 					var file = null;
-					for(f in file_map){
-						if(hash==file_map[f]){
+					for (f in file_map) {
+						if (hash == file_map[f]) {
 							file = f;
 							break;
 						}
 					}
-					if(file != null){
-						delete file_map[file];
-						delete current_files[file];
-						$("#"+file+" .del, #"+file+" .info").remove();
-						$("#"+file+" .results").html("<strong>Status: </strong>"+result.status+"<br/>"
-							+"<strong>Message: </strong>"+result.message+"<br/><strong>URL: </strong>"
-							+"<input type='text' readonly value='http://[url-here]/i/"+result.image_url+"' />");
-						$("#"+file).addClass(result.status);
+					if (file != null) {
+						if(result.status == "success"){
+							delete file_map[file];
+							delete current_files[file];
+						}
+						$("#" + file + " .del, #" + file + " .info").remove();
+						$("#" + file + " .results").html("<strong>Status: </strong>" + result.status + "<br/>"
+							 + "<strong>Message: </strong>" + result.message + "<br/><strong>URL: </strong>"
+							 + "<input type='text' readonly value='http://picturit.org/i/" + result.image_url + "' />");
+						$("#" + file).addClass(result.status);
 					}
 				}
-				
-				for(f in file_map){
-					delete file_map[file];
-					delete current_files[file];
-					$("#"+file+" .del, #"+file+" .info").remove();
-					$("#"+file+" .results").html("<strong>Status: </strong>Missing<br/>"
-							+"<strong>Message: </strong>Sorry! The server didn't seem to have processed your image");
-					$("#"+file).addClass("error");
+
+				$(".preview-container input").focus(function () {
+					var $this = $(this);
+					$this.select();
+					// Work around Chrome's little problem
+					$this.mouseup(function () {
+						// Prevent further mouseup intervention
+						$this.unbind("mouseup");
+						return false;
+					});
+				});
+				for (f in file_map) {
+					$("#" + f + " .del, #" + f + " .info").remove();
+					$("#" + f + " .results").html("<strong>Status: </strong>Missing<br/>"
+						 + "<strong>Message: </strong>Sorry! The server didn't seem to have processed your image");
+					$("#" + f).addClass("error");
 				}
-				
-				$("#results").append("<p class='"+(numOk > 0 ? 'success' : 'failed')+"'><strong>"+numOk+" </strong> images uploaded.</p>");
-				if(numFailed > 0) {
-					$("#results").append("<p class='error'><strong>"+numFailed+" </strong> images failed to upload.</p>");
+
+				$("#results").append("<p class='" + (numOk > 0 ? 'success' : 'failed') + "'><strong>" + numOk + " </strong> image(s) uploaded.</p>");
+				if (numFailed > 0) {
+					$("#results").append("<p class='error'><strong>" + numFailed + " </strong> image(s) failed to upload.</p>");
 					$("#upload_button").slideDown().find("p.text").text("Try again");
+					$("#image_upload").slideDown();
+					trying_again = true;
+				} else {
+					$("#image_upload, #upload_button").slideUp();
 				}
-			} catch(e){
+			} catch (e) {
 				console.log(e);
 				notify("Sorry! There was a problem receiving a response from our servers. Try again later.");
 			}

@@ -87,7 +87,8 @@ if(isset($_FILES['userfile'])){
 					} else throw new Exception("Not an SVG");
 				} catch(Exception $e){
 					$json['debug'] .= $e."\n";
-					$current_json['message'] = "Whoops! It seems you didn't upload a (valid) image. Make sure you are uploading a non-corrupted image file (any JPEG, PNG, GIF, or SVG) and try again."; 
+					$current_json['message'] = "Whoops! Our servers didn't recognize this image's format."; 
+					$current_json['hash'] = hash_file('md5', $tmpName);
 				}
 			}
 			if($proceed){
