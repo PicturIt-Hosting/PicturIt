@@ -26,6 +26,13 @@ If possible, enable JavaScript or upgrade to a newer browser, then reload this s
 	Make sure to upgrade to the latest version of your browser, or switch to a modern browser like Mozilla Firefox, Google Chrome, or Opera
 </div>
 
+<div id="upload_overlay">
+	<div class='center'>
+		<progress id="upload_progress"></progress>
+		<p class='upload_info'></p>
+	</div>
+</div>
+
 <div id="uploader" class='loading-hidden'>
 	<div id="preview-div" class="clearfix">
 		<br/><br/><br/><br/><br/><br/><br/><br/>
@@ -38,7 +45,6 @@ If possible, enable JavaScript or upgrade to a newer browser, then reload this s
 	</form>
 	<p id="drop-info">Or drop images anywhere<br/><em>Limit of 8MB / 20 images per request</em></p>
 	<div id="upload_button" class='button' title="Ready to go? Click me!"><p class='text'>Upload!</p></div>
-	<progress id="upload_progress" style="display: none;"></progress>
 	<pre id="json_response"></pre>
 	<div id="results">
 		

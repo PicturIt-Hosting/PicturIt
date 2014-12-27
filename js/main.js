@@ -181,6 +181,7 @@ $("form#image_upload input[type=file]").change(function (e) {
 		var key;
 		do {
 			key = "img" + Math.random();
+			key = key.replace(".", "");
 		} while (current_files.hasOwnProperty(key));
 		current_files[key] = f;
 
@@ -200,7 +201,8 @@ $("form#image_upload input[type=file]").change(function (e) {
 			return function (e1) {
 				$("form#image_upload p").text("Add More");
 				var img = $("<img />").addClass("preview").attr("src", e1.target.result).css("display", "none");
-				var div = $("<div><div class='del'>Remove</div><div class='info'></div><span class='helper'></span></div>").addClass("preview-container")
+				var div = $("<div><div class='results'>In upload queue</div><div class='del'>Remove</div><div "
+					+"class='info'></div><span class='helper'></span></div>").addClass("preview-container")
 					.attr("id", theKey).append(img).css("display", "none").fadeIn();
 				$("#preview-div").prepend(div);
 				img.slideDown();
@@ -241,7 +243,6 @@ $("#upload_button").click(function (e) {
 	var len = 0;
 	for(x in current_files) len++;
 	if(len==0) return;
-	$("#upload_progress").show();
 	var formData = new FormData();
 	formData.append("verify1", "");
 	formData.append("verify2", "swag");
@@ -249,6 +250,11 @@ $("#upload_button").click(function (e) {
 	for(fileName in current_files){
 		formData.append("userfile[]", current_files[fileName]);
 	}
+	$(".preview-container .results").text("Uploading...");
+	$("#upload_overlay .upload_info").text("Connecting...");
+	$("#upload_overlay progress").removeAttr("value").removeAttr("max");
+	var timeoutId = setTimeout(function(){ $("#upload_overlay .upload_info").text("Uploading..."); }, 1000);
+	$("#upload_overlay").fadeIn();
 	$.ajax({
 		url : "upload.php",
 		type : 'POST',
@@ -262,27 +268,61 @@ $("#upload_button").click(function (e) {
 						var percentComplete = evt.loaded * 100 / evt.total;
 						console.log("Progress: ", percentComplete);
 						$("#upload_progress").attr("max", "100").attr("value", percentComplete);
+						clearTimeout(timeoutId);
+						$("#upload_overlay .upload_info").text("Uploading: " + percentComplete+"%");
 					}
 				}, false);
 			}
 			return xhr;
 		},
 		success : function (data) {
-			$("#upload_progress").hide();
 			$("#json_response").text(data);
 			$("#upload_button").slideUp();
+			$("#upload_overlay").fadeOut();
+			$("#drop-info").slideUp();
 			try {
 				var resp = JSON.parse(data);
 				$("#results").html("").append("<p class='"+resp.status+"'><strong>Status: </strong>"+resp.status+"</p>")
 					.slideDown();
+				if(resp.status != "error"){
+					$("#image_upload, #upload_button").slideUp();
+				}
 				var numOk = 0, numFailed = 0;
 				for(var i=0;i<resp.results.length;i++){
-					if(resp.results[i].status == "success"){
+					var result = resp.results[i];
+					if(result.status == "success"){
 						numOk++;
 					} else {
 						numFailed++;
 					}
+					var hash = result.hash;
+					var file = null;
+					for(f in file_map){
+						if(hash==file_map[f]){
+							file = f;
+							break;
+						}
+					}
+					if(file != null){
+						delete file_map[file];
+						delete current_files[file];
+						$("#"+file+" .del, #"+file+" .info").remove();
+						$("#"+file+" .results").html("<strong>Status: </strong>"+result.status+"<br/>"
+							+"<strong>Message: </strong>"+result.message+"<br/><strong>URL: </strong>"
+							+"<input type='text' readonly value='http://[url-here]/i/"+result.image_url+"' />");
+						$("#"+file).addClass(result.status);
+					}
 				}
+				
+				for(f in file_map){
+					delete file_map[file];
+					delete current_files[file];
+					$("#"+file+" .del, #"+file+" .info").remove();
+					$("#"+file+" .results").html("<strong>Status: </strong>Missing<br/>"
+							+"<strong>Message: </strong>Sorry! The server didn't seem to have processed your image");
+					$("#"+file).addClass("error");
+				}
+				
 				$("#results").append("<p class='"+(numOk > 0 ? 'success' : 'failed')+"'><strong>"+numOk+" </strong> images uploaded.</p>");
 				if(numFailed > 0) {
 					$("#results").append("<p class='error'><strong>"+numFailed+" </strong> images failed to upload.</p>");
@@ -294,9 +334,9 @@ $("#upload_button").click(function (e) {
 			}
 		},
 		error : function (jqXHR, textStatus, errorThrown) {
+			$("#upload_overlay").fadeOut();
 			console.log(jqXHR, textStatus, errorThrown);
-			$("#upload_progress").hide();
-			$("#json_response").text("Sorry! Something bad happened and your image wasn't uploaded. Check your internet connection and try again.");
+			notify("Sorry! Something bad happened and your image wasn't uploaded. Check your internet connection and try again.");
 		},
 		cache : false,
 		contentType : false,
